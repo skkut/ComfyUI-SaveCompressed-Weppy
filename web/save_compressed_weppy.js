@@ -10,7 +10,8 @@ app.registerExtension({
             }
             if (this.imgs && this.imgs.length > 0) {
                 let imageIndex = (this.imageIndex != null) ? this.imageIndex : (this.overIndex != null ? this.overIndex : this.imgs.length - 1);
-                options.push({
+                
+                const menuItem = {
                     content: "Save Compressed Weppy",
                     callback: async () => {
                         let img = this.imgs[imageIndex];
@@ -63,7 +64,14 @@ app.registerExtension({
                             console.error("Error saving WebP:", e);
                         }
                     }
-                });
+                };
+
+                const saveImageIndex = options.findIndex(opt => opt && (opt.content === "Save Image" || opt.content === "Save image"));
+                if (saveImageIndex !== -1) {
+                    options.splice(saveImageIndex + 1, 0, menuItem);
+                } else {
+                    options.push(menuItem);
+                }
             }
         };
     }
