@@ -62,6 +62,6 @@ async def save_compressed_weppy_endpoint(request):
         full_path = os.path.join(full_output_folder, file)
         
         img.save(full_path, format="WEBP", exif=exif_bytes, quality=80, lossless=False)
-        return web.json_response({"status": "success", "filename": file})
+        return web.json_response({"status": "success", "filename": file, "subfolder": out_subfolder, "type": "output"})
     except Exception as e:
         return web.json_response({"status": "error", "message": str(e)}, status=500)

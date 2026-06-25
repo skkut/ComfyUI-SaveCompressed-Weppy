@@ -46,6 +46,13 @@ app.registerExtension({
                                 const result = await response.json();
                                 if (result.status === "success") {
                                     console.log("Saved WebP successfully:", result.filename);
+                                    const downloadUrl = `/view?filename=${encodeURIComponent(result.filename)}&type=${encodeURIComponent(result.type || "output")}&subfolder=${encodeURIComponent(result.subfolder || "")}`;
+                                    const a = document.createElement("a");
+                                    a.href = downloadUrl;
+                                    a.download = result.filename;
+                                    document.body.appendChild(a);
+                                    a.click();
+                                    document.body.removeChild(a);
                                 } else {
                                     console.error("Failed to save WebP:", result.message);
                                 }
