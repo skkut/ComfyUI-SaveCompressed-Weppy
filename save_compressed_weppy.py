@@ -14,7 +14,7 @@ class SaveCompressedWeppy:
     def INPUT_TYPES(s):
         return {"required": 
                     {"images": ("IMAGE", ),
-                     "filename_prefix": ("STRING", {"default": "ComfyUI"}),
+                     "filename_prefix": ("STRING", {"default": "ComfyUI_Weppy_"}),
                      "quality": ("INT", {"default": 80, "min": 1, "max": 100, "step": 1}),
                      "lossless": ("BOOLEAN", {"default": False}),
                      },
@@ -26,7 +26,7 @@ class SaveCompressedWeppy:
     OUTPUT_NODE = True
     CATEGORY = "image"
 
-    def save_images(self, images, filename_prefix="ComfyUI", quality=80, lossless=False, prompt=None, extra_pnginfo=None):
+    def save_images(self, images, filename_prefix="ComfyUI_Weppy_", quality=80, lossless=False, prompt=None, extra_pnginfo=None):
         filename_prefix += self.prefix_append
         full_output_folder, filename, counter, subfolder, filename_prefix = folder_paths.get_save_image_path(filename_prefix, self.output_dir, images[0].shape[1], images[0].shape[0])
         results = list()

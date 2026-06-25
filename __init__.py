@@ -55,7 +55,7 @@ async def save_compressed_weppy_endpoint(request):
                 exif_bytes[0x010e] = ("workflow:" + json.dumps(workflow)).encode("utf-8")
 
         output_dir = folder_paths.get_output_directory()
-        output_prefix = "ComfyUI"
+        output_prefix = "ComfyUI_Weppy_"
         full_output_folder, out_filename, counter, out_subfolder, out_filename_prefix = folder_paths.get_save_image_path(output_prefix, output_dir, img.width, img.height)
         
         file = f"{out_filename}_{counter:05}_.webp"
