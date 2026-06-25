@@ -21,6 +21,22 @@ A custom node and context menu extension for [ComfyUI](https://github.com/comfya
    ```
 3. Restart ComfyUI.
 
+## Usage
+
+This extension provides two ways to save your images as compressed WebP files:
+
+### 1. Save Compressed Weppy Node
+Add the **Save Compressed Weppy** node to your workflow. This node will automatically save every generated image to your ComfyUI `output` directory as a `.webp` file during workflow execution.
+
+### 2. Right-Click Context Menu ("Save Compressed Weppy")
+You can save any image displayed in the ComfyUI frontend (e.g. from preview nodes, or output nodes) by right-clicking it:
+1. **Right-click** on the image preview.
+2. Select **"Save Compressed Weppy"** from the context menu (positioned directly next to the native "Save Image" entry).
+3. The extension will automatically process the image, embed the generation workflow metadata (with large binary files stripped to stay within EXIF size limits), and trigger a browser/OS download.
+4. **ComfyUI Desktop / Native Save dialog**: If you are using ComfyUI Desktop or have your browser configured to ask where to save files, this will open the native OS save file dialog so you can choose the destination directory and name.
+
+---
+
 ## Node Configuration
 
 ### Save Compressed Weppy
