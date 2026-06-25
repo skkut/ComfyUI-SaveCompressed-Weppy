@@ -4,6 +4,18 @@ import numpy as np
 from PIL import Image
 import folder_paths
 
+def strip_binary_from_workflow(value):
+    if isinstance(value, dict):
+        return {k: strip_binary_from_workflow(v) for k, v in value.items()}
+    elif isinstance(value, list):
+        return [strip_binary_from_workflow(v) for v in value]
+    elif isinstance(value, str):
+        if value.startswith("data:") and ";base64," in value:
+            return ""
+        if len(value) > 10240 and " " not in value:
+            return ""
+    return value
+
 class SaveCompressedWeppy:
     def __init__(self):
         self.output_dir = folder_paths.get_output_directory()
@@ -15,9 +27,9 @@ class SaveCompressedWeppy:
         return {"required": 
                     {"images": ("IMAGE", ),
                      "filename_prefix": ("STRING", {"default": "ComfyUI_Weppy_"}),
-                     "quality": ("INT", {"default": 80, "min": 1, "max": 100, "step": 1}),
-                     "lossless": ("BOOLEAN", {"default": False}),
-                     },
+                      "quality": ("INT", {"default": 80, "min": 1, "max": 100, "step": 1}),
+                      "lossless": ("BOOLEAN", {"default": False}),
+                      },
                 "hidden": {"prompt": "PROMPT", "extra_pnginfo": "EXTRA_PNGINFO"},
                 }
 
@@ -40,17 +52,17 @@ class SaveCompressedWeppy:
             try:
                 import piexif
                 if prompt is not None:
-                    exif_dict["0th"][piexif.ImageIFD.Make] = ("prompt:" + json.dumps(prompt)).encode("utf-8")
+                    exif_dict["0th"][piexif.ImageIFD.Make] = ("prompt:" + json.dumps(strip_binary_from_workflow(prompt))).encode("utf-8")
                 if extra_pnginfo is not None and "workflow" in extra_pnginfo:
-                    exif_dict["0th"][piexif.ImageIFD.ImageDescription] = ("workflow:" + json.dumps(extra_pnginfo["workflow"])).encode("utf-8")
+                    exif_dict["0th"][piexif.ImageIFD.ImageDescription] = ("workflow:" + json.dumps(strip_binary_from_workflow(extra_pnginfo["workflow"]))).encode("utf-8")
                 exif_bytes = piexif.dump(exif_dict)
             except ImportError:
                 # Fallback to Pillow native EXIF if piexif is not installed
                 exif_bytes = img.getexif()
                 if prompt is not None:
-                    exif_bytes[0x010f] = ("prompt:" + json.dumps(prompt)).encode("utf-8")
+                    exif_bytes[0x010f] = ("prompt:" + json.dumps(strip_binary_from_workflow(prompt))).encode("utf-8")
                 if extra_pnginfo is not None and "workflow" in extra_pnginfo:
-                    exif_bytes[0x010e] = ("workflow:" + json.dumps(extra_pnginfo["workflow"])).encode("utf-8")
+                    exif_bytes[0x010e] = ("workflow:" + json.dumps(strip_binary_from_workflow(extra_pnginfo["workflow"]))).encode("utf-8")
 
             file = f"{filename}_{counter:05}_.webp"
             full_path = os.path.join(full_output_folder, file)

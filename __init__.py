@@ -1,4 +1,4 @@
-from .save_compressed_weppy import SaveCompressedWeppy
+from .save_compressed_weppy import SaveCompressedWeppy, strip_binary_from_workflow
 import os
 import json
 from server import PromptServer
@@ -43,16 +43,16 @@ async def save_compressed_weppy_endpoint(request):
         try:
             import piexif
             if prompt is not None:
-                exif_dict["0th"][piexif.ImageIFD.Make] = ("prompt:" + json.dumps(prompt)).encode("utf-8")
+                exif_dict["0th"][piexif.ImageIFD.Make] = ("prompt:" + json.dumps(strip_binary_from_workflow(prompt))).encode("utf-8")
             if workflow is not None:
-                exif_dict["0th"][piexif.ImageIFD.ImageDescription] = ("workflow:" + json.dumps(workflow)).encode("utf-8")
+                exif_dict["0th"][piexif.ImageIFD.ImageDescription] = ("workflow:" + json.dumps(strip_binary_from_workflow(workflow))).encode("utf-8")
             exif_bytes = piexif.dump(exif_dict)
         except ImportError:
             exif_bytes = img.getexif()
             if prompt is not None:
-                exif_bytes[0x010f] = ("prompt:" + json.dumps(prompt)).encode("utf-8")
+                exif_bytes[0x010f] = ("prompt:" + json.dumps(strip_binary_from_workflow(prompt))).encode("utf-8")
             if workflow is not None:
-                exif_bytes[0x010e] = ("workflow:" + json.dumps(workflow)).encode("utf-8")
+                exif_bytes[0x010e] = ("workflow:" + json.dumps(strip_binary_from_workflow(workflow))).encode("utf-8")
 
         output_dir = folder_paths.get_output_directory()
         output_prefix = "ComfyUI_Weppy_"
