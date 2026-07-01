@@ -1,5 +1,6 @@
 import os
 import json
+import random
 import numpy as np
 from PIL import Image
 import folder_paths
@@ -20,13 +21,13 @@ class SaveCompressedWeppy:
     def __init__(self):
         self.output_dir = folder_paths.get_output_directory()
         self.type = "output"
-        self.prefix_append = ""
+        self.prefix_append = "_" + ''.join(random.choice("abcdefghijklmnopqrstupvxyz") for _ in range(5))
 
     @classmethod
     def INPUT_TYPES(s):
         return {"required": 
                     {"images": ("IMAGE", ),
-                     "filename_prefix": ("STRING", {"default": "ComfyUI_Weppy_"}),
+                     "filename_prefix": ("STRING", {"default": "ComfyUI_Weppy"}),
                       "quality": ("INT", {"default": 80, "min": 1, "max": 100, "step": 1}),
                       "lossless": ("BOOLEAN", {"default": False}),
                       },
@@ -38,7 +39,7 @@ class SaveCompressedWeppy:
     OUTPUT_NODE = True
     CATEGORY = "image"
 
-    def save_images(self, images, filename_prefix="ComfyUI_Weppy_", quality=80, lossless=False, prompt=None, extra_pnginfo=None):
+    def save_images(self, images, filename_prefix="ComfyUI_Weppy", quality=80, lossless=False, prompt=None, extra_pnginfo=None):
         filename_prefix += self.prefix_append
         full_output_folder, filename, counter, subfolder, filename_prefix = folder_paths.get_save_image_path(filename_prefix, self.output_dir, images[0].shape[1], images[0].shape[0])
         results = list()
@@ -64,7 +65,7 @@ class SaveCompressedWeppy:
                 if extra_pnginfo is not None and "workflow" in extra_pnginfo:
                     exif_bytes[0x010e] = ("workflow:" + json.dumps(strip_binary_from_workflow(extra_pnginfo["workflow"]))).encode("utf-8")
 
-            file = f"{filename}_{counter:05}_.webp"
+            file = f"{filename}_{counter:05}.webp"
             full_path = os.path.join(full_output_folder, file)
             
             # Save the WebP image with embedded EXIF metadata

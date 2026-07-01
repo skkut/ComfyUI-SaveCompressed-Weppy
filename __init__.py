@@ -1,6 +1,7 @@
 from .save_compressed_weppy import SaveCompressedWeppy, strip_binary_from_workflow
 import os
 import json
+import random
 from server import PromptServer
 from aiohttp import web
 import folder_paths
@@ -55,10 +56,10 @@ async def save_compressed_weppy_endpoint(request):
                 exif_bytes[0x010e] = ("workflow:" + json.dumps(strip_binary_from_workflow(workflow))).encode("utf-8")
 
         output_dir = folder_paths.get_output_directory()
-        output_prefix = "ComfyUI_Weppy_"
+        output_prefix = "ComfyUI_Weppy_" + ''.join(random.choice("abcdefghijklmnopqrstupvxyz") for _ in range(5))
         full_output_folder, out_filename, counter, out_subfolder, out_filename_prefix = folder_paths.get_save_image_path(output_prefix, output_dir, img.width, img.height)
         
-        file = f"{out_filename}_{counter:05}_.webp"
+        file = f"{out_filename}_{counter:05}.webp"
         full_path = os.path.join(full_output_folder, file)
         
         img.save(full_path, format="WEBP", exif=exif_bytes, quality=80, lossless=False)
