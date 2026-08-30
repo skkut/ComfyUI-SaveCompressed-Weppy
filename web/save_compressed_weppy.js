@@ -42,21 +42,23 @@ app.registerExtension({
                                     workflow
                                 })
                             });
-                            
+
                             if (response.ok) {
-                                const result = await response.json();
-                                if (result.status === "success") {
-                                    console.log("Saved WebP successfully:", result.filename);
-                                    const downloadUrl = `/view?filename=${encodeURIComponent(result.filename)}&type=${encodeURIComponent(result.type || "output")}&subfolder=${encodeURIComponent(result.subfolder || "")}`;
-                                    const a = document.createElement("a");
-                                    a.href = downloadUrl;
-                                    a.download = result.filename;
-                                    document.body.appendChild(a);
-                                    a.click();
-                                    document.body.removeChild(a);
-                                } else {
-                                    console.error("Failed to save WebP:", result.message);
+                                const blob = await response.blob();
+                                const disposition = response.headers.get("Content-Disposition");
+                                let downloadName = "image.webp";
+                                if (disposition) {
+                                    const match = disposition.match(/filename="?([^";\n]+)"?/);
+                                    if (match) downloadName = match[1];
                                 }
+                                const url = URL.createObjectURL(blob);
+                                const a = document.createElement("a");
+                                a.href = url;
+                                a.download = downloadName;
+                                document.body.appendChild(a);
+                                a.click();
+                                document.body.removeChild(a);
+                                URL.revokeObjectURL(url);
                             } else {
                                 console.error("HTTP error when saving WebP:", response.status);
                             }

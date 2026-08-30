@@ -1,5 +1,6 @@
 from .save_compressed_weppy import SaveCompressedWeppy, strip_binary_from_workflow
 import os
+import io
 import json
 import random
 from server import PromptServer
@@ -55,14 +56,16 @@ async def save_compressed_weppy_endpoint(request):
             if workflow is not None:
                 exif_bytes[0x010e] = ("workflow:" + json.dumps(strip_binary_from_workflow(workflow))).encode("utf-8")
 
-        output_dir = folder_paths.get_output_directory()
-        output_prefix = "ComfyUI_Weppy_" + ''.join(random.choice("abcdefghijklmnopqrstupvxyz") for _ in range(5))
-        full_output_folder, out_filename, counter, out_subfolder, out_filename_prefix = folder_paths.get_save_image_path(output_prefix, output_dir, img.width, img.height)
-        
-        file = f"{out_filename}_{counter:05}.webp"
-        full_path = os.path.join(full_output_folder, file)
-        
-        img.save(full_path, format="WEBP", exif=exif_bytes, quality=80, lossless=False)
-        return web.json_response({"status": "success", "filename": file, "subfolder": out_subfolder, "type": "output"})
+        download_name = f"ComfyUI_Weppy_{''.join(random.choice('abcdefghijklmnopqrstupvxyz') for _ in range(5))}.webp"
+
+        buf = io.BytesIO()
+        img.save(buf, format="WEBP", exif=exif_bytes, quality=80, lossless=False)
+        buf.seek(0)
+
+        return web.Response(
+            body=buf.getvalue(),
+            content_type="image/webp",
+            headers={"Content-Disposition": f'attachment; filename="{download_name}"'}
+        )
     except Exception as e:
         return web.json_response({"status": "error", "message": str(e)}, status=500)

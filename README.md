@@ -1,5 +1,18 @@
 # ComfyUI Save Compressed Weppy
 
+> ## ⚠️ Deprecated
+>
+> This extension is **deprecated** and no longer maintained.
+>
+> Its functionality has been merged into **[Skkut Utils](https://github.com/skkut/ComfyUI-skkut-utils)**. Please uninstall this node and install Skkut Utils instead:
+>
+> - **ComfyUI Manager**: Search for **"Skkut Utils"** in the manager's node list and install it.
+> - **Command line**:
+>   ```bash
+>   comfy node install skkut-utils
+>   ```
+> - **Manual**: Clone from [https://github.com/skkut/ComfyUI-skkut-utils](https://github.com/skkut/ComfyUI-skkut-utils) into `ComfyUI/custom_nodes/`.
+
 A custom node and context menu extension for [ComfyUI](https://github.com/comfyanonymous/ComfyUI) to save images as compressed WebP files (`.webp`) while maintaining metadata (prompt and workflow) without reaching EXIF size limits.
 
 ## Features
